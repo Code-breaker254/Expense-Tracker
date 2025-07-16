@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+  }
+
+  .container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+  }
+
+  .sidebar {
+    background-color: #1e1e2f;
+    width: 80px;
+    transition: width 0.3s;
+    overflow: hidden;
+  }
+
+  .sidebar.expanded {
+    width: 220px;
+  }
+
+  .sidebar .toggle-btn {
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #333;
+  }
+
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .sidebar ul li {
+    border-bottom: 1px solid #333;
+  }
+
+  .sidebar ul li a {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    color: #ddd;
+    text-decoration: none;
+  }
+
+  .sidebar ul li a:hover {
+    background-color: #2f2f44;
+  }
+
+  .sidebar i {
+    font-size: 1.2rem;
+    margin-right: 16px;
+  }
+
+  .label {
+    display: none;
+  }
+
+  .sidebar.expanded .label {
+    display: inline;
+  }
+
+  .main {
+    flex-grow: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    background-color: #f5f7fa;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: #fff;
+  }
+
+  th, td {
+    padding: 12px;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+  }
+
+  th {
+    background-color: #4b6cb7;
+    color: white;
+  }
+
+  .chart ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 1rem;
+  }
+
+  .chart ul li {
+    padding: 10px;
+    background: white;
+    margin-bottom: 8px;
+    border-left: 4px solid #4b6cb7;
+  }
+
+  .settings-box {
+    background: #fff;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border-left: 5px solid #4b6cb7;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .settings-box h3 {
+    margin-top: 0;
+    color: #4b6cb7;
+  }
+
+  .settings-box p {
+    margin: 0.5rem 0;
+  }
+
+  .settings-box img {
+    max-height: 60px;
+    margin: 0.5rem 0;
+  }
+
+  .settings-box a {
+    color: #4b6cb7;
+    font-weight: bold;
+    text-decoration: underline;
+  }
+
+  #settings-section {
+    display: none;
+  }
+</style>
+
+<div class="container">
+  <div class="sidebar" id="sidebar">
+    <div class="toggle-btn" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i>
+    </div>
+    <ul>
+      <li><a href="#" onclick="showSection('main')"><i class="fas fa-tachometer-alt"></i><span class="label"> Dashboard</span></a></li>
+      <li><a href="/add"><i class="fas fa-plus-circle"></i><span class="label"> Add Transaction</span></a></li>
+      <li><a href="#" onclick="showSection('settings-section')"><i class="fas fa-cogs"></i><span class="label"> Settings</span></a></li>
+      <li><a href="/download"><i class="fas fa-file-csv"></i><span class="label"> Download CSV</span></a></li>
+      <li><a href="/download/pdf"><i class="fas fa-file-pdf"></i><span class="label"> Download PDF</span></a></li>
+      <li><a href="/account"><i class="fas fa-user-cog"></i><span class="label"> Account</span></a></li>
+      <li><a href="/logout"><i class="fas fa-sign-out-alt"></i><span class="label"> Logout</span></a></li>
+    </ul>
+  </div>
+
+  <div class="main">
+    <div id="main">
+      <h2>Welcome Admin</h2>
+
+      <h3>Users</h3>
+      <table>
+        <tr><th>ID</th><th>Name</th><th>Username</th><th>Phone</th><th>Role</th><th>Action</th></tr>
+        {% for user in users %}
+          <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.phone }}</td>
+            <td>{{ user.role }}</td>
+            <td><a href="{{ url_for('user_activity', user_id=user.id) }}">View</a></td>
+          </tr>
+        {% endfor %}
+      </table>
+
+      <h3>Transactions</h3>
+      <table>
+        <tr><th>ID</th><th>User ID</th><th>Type</th><th>Amount</th><th>Description</th><th>Date</th><th>Time</th></tr>
+        {% for tx in transactions %}
+          <tr>
+            <td>{{ tx.id }}</td>
+            <td>{{ tx.user_id }}</td>
+            <td>{{ tx.type }}</td>
+            <td>{{ tx.amount }}</td>
+            <td>{{ tx.description }}</td>
+            <td>{{ tx.date }}</td>
+            <td>{{ tx.time }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+
+      <div class="chart">
+        <h3>Summary Chart</h3>
+        <ul>
+          {% for label, value in zip(labels, data) %}
+            <li><strong>{{ label.title() }}:</strong> Ksh {{ value }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <div id="settings-section" class="settings-box">
+      <h3>Site Settings</h3>
+      <p><strong>Site Name:</strong> {{ settings.get('site_name', 'Expense Tracker') }}</p>
+      <p><strong>Currency:</strong> {{ settings.get('currency', 'KSH') }}</p>
+      <p><strong>Email:</strong> {{ settings.get('notification_email', 'Not set') }}</p>
+      <p><strong>Theme Color:</strong>
+        <span style="display:inline-block;width:20px;height:20px;background-color:{{ settings.get('theme_color', '#4b6cb7') }};"></span>
+      </p>
+      <p><strong>Report Footer:</strong> {{ settings.get('report_footer', '') }}</p>
+      {% if settings.get('logo_path') %}
+        <p><strong>Logo:</strong><br>
+        <img src="{{ settings.get('logo_path') }}" alt="Logo"></p>
+      {% endif %}
+      <p><a href="{{ url_for('admin_settings') }}">Edit Settings</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleSidebar() {
+    document.getElementById('sidebar').classList.toggle('expanded');
+  }
+
+  function showSection(sectionId) {
+    document.getElementById('main').style.display = sectionId === 'main' ? 'block' : 'none';
+    document.getElementById('settings-section').style.display = sectionId === 'settings-section' ? 'block' : 'none';
+  }
+</script>
+{% endblock %}

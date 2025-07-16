@@ -1,0 +1,6 @@
+flask==2.3.3
+werkzeug==2.3.7
+fpdf==1.7.2
+flask-cors==4.0.0
+python-dotenv==1.0.1
+gunicorn==21.2.0

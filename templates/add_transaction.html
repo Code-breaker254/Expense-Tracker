@@ -1,0 +1,19 @@
+<!-- templates/add_transaction.html -->
+
+{% extends "base.html" %}
+{% block title %}Add Transaction{% endblock %}
+{% block content %}
+<h2>Add Transaction</h2>
+<form method="post">
+    <select name="type">
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+        <option value="advance">Advance</option>
+    </select><br>
+    <input type="number" name="amount" placeholder="Amount" required><br>
+    <input type="text" name="description" placeholder="Description" required><br>
+    <input type="date" name="date" required><br>
+    <input type="time" name="time" required><br>
+    <button type="submit">Add</button>
+</form>
+{% endblock %}

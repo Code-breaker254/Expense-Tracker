@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+  }
+
+  .container {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+  }
+
+  .sidebar {
+    background-color: #1e1e2f;
+    width: 80px;
+    transition: width 0.3s;
+    overflow: hidden;
+  }
+
+  .sidebar.expanded {
+    width: 220px;
+  }
+
+  .sidebar .toggle-btn {
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #333;
+  }
+
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .sidebar ul li {
+    border-bottom: 1px solid #333;
+  }
+
+  .sidebar ul li a {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    color: #ddd;
+    text-decoration: none;
+  }
+
+  .sidebar ul li a:hover {
+    background-color: #2f2f44;
+  }
+
+  .sidebar i {
+    font-size: 1.2rem;
+    margin-right: 16px;
+  }
+
+  .label {
+    display: none;
+  }
+
+  .sidebar.expanded .label {
+    display: inline;
+  }
+
+  .main {
+    flex-grow: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    background-color: #f5f7fa;
+  }
+
+  .buttons {
+    margin-bottom: 1rem;
+  }
+
+  .buttons a, .buttons button {
+    background: #4b6cb7;
+    color: white;
+    padding: 10px 15px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .buttons a:hover, .buttons button:hover {
+    background: #3a58a5;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    margin-top: 1rem;
+  }
+
+  th, td {
+    padding: 12px;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+  }
+
+  th {
+    background-color: #4b6cb7;
+    color: white;
+  }
+
+  .summary-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 2rem;
+  }
+
+  .summary-list li {
+    background: #f0f4ff;
+    border-left: 4px solid #4b6cb7;
+    margin: 8px 0;
+    padding: 8px 12px;
+    border-radius: 5px;
+  }
+</style>
+
+<div class="container">
+  <div class="sidebar" id="sidebar">
+    <div class="toggle-btn" onclick="toggleSidebar()">
+      <i class="fas fa-bars"></i>
+    </div>
+    <ul>
+      <li><a href="/dashboard"><i class="fas fa-home"></i><span class="label"> Dashboard</span></a></li>
+      <li><a href="/account"><i class="fas fa-user-cog"></i><span class="label"> Account</span></a></li>
+      <li><a href="/logout"><i class="fas fa-sign-out-alt"></i><span class="label"> Logout</span></a></li>
+    </ul>
+  </div>
+
+  <div class="main" id="main">
+    <h2>Welcome {{ session.user.name }}</h2>
+
+    <div class="buttons">
+      <a href="{{ url_for('add_transaction') }}"><i class="fas fa-plus-circle"></i> Add Transaction</a>
+      <button onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+    </div>
+
+    <h3>Your Transactions</h3>
+    <table>
+      <tr><th>Type</th><th>Amount</th><th>Description</th><th>Date</th><th>Time</th></tr>
+      {% for tx in transactions %}
+        <tr>
+          <td>{{ tx.type }}</td>
+          <td>{{ tx.amount }}</td>
+          <td>{{ tx.description }}</td>
+          <td>{{ tx.date }}</td>
+          <td>{{ tx.time }}</td>
+        </tr>
+      {% endfor %}
+    </table>
+
+    <h3>Summary</h3>
+    <ul class="summary-list">
+      {% for label, value in zip(labels, data) %}
+        <li><strong>{{ label.title() }}:</strong> Ksh {{ value }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
+
+<script>
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('expanded');
+  }
+</script>
+{% endblock %}

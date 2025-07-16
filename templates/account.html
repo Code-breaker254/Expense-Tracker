@@ -1,0 +1,12 @@
+<!-- templates/account.html -->
+{% extends "base.html" %}
+{% block title %}Account Settings{% endblock %}
+{% block content %}
+<h2>Account Settings</h2>
+<form method="post">
+    <input type="text" name="name" value="{{ user.name }}" required><br>
+    <input type="text" name="phone" value="{{ user.phone }}" required><br>
+    <input type="password" name="password" placeholder="New Password (leave blank to keep current)"><br>
+    <button type="submit">Save Changes</button>
+</form>
+{% endblock %}

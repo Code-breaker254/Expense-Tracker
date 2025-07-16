@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Expense Tracker{% endblock %}</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    {% if settings and settings.get('theme_color') %}
+    <style>
+        :root {
+            --primary-color: {{ settings.get('theme_color') }};
+        }
+    </style>
+    {% endif %}
+</head>
+<body style="background-color: var(--primary-color, #f5f5f5);">
+
+    <header style="padding: 1rem; background: white; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center;">
+            {% if settings and settings.get('logo_path') %}
+                <img src="{{ settings['logo_path'] }}" alt="Logo" style="height: 40px; margin-right: 10px;">
+            {% endif %}
+            <h1 style="margin: 0; font-size: 1.5rem;">{{ settings.get('site_name', 'Expense Tracker') }}</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

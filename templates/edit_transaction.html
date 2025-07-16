@@ -1,0 +1,18 @@
+<!-- templates/edit_transaction.html -->
+{% extends "base.html" %}
+{% block title %}Edit Transaction{% endblock %}
+{% block content %}
+<h2>Edit Transaction</h2>
+<form method="post">
+    <select name="type">
+        <option value="income" {% if tx.type == 'income' %}selected{% endif %}>Income</option>
+        <option value="expense" {% if tx.type == 'expense' %}selected{% endif %}>Expense</option>
+        <option value="advance" {% if tx.type == 'advance' %}selected{% endif %}>Advance</option>
+    </select><br>
+    <input type="number" name="amount" value="{{ tx.amount }}" required><br>
+    <input type="text" name="description" value="{{ tx.description }}" required><br>
+    <input type="date" name="date" value="{{ tx.date }}" required><br>
+    <input type="time" name="time" value="{{ tx.time }}" required><br>
+    <button type="submit">Update</button>
+</form>
+{% endblock %}

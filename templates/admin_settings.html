@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Admin Settings{% endblock %}
+{% block content %}
+<style>
+  .settings-form {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+  .settings-form h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+  }
+
+  .settings-form label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #555;
+  }
+
+  .settings-form input,
+  .settings-form textarea {
+    width: 100%;
+    padding: 0.75rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+  .settings-form button {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #4b6cb7;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+
+  .settings-form button:hover {
+    background-color: #3c5ca0;
+  }
+
+  .flashes {
+    max-width: 600px;
+    margin: 1rem auto;
+    list-style: none;
+    padding: 0;
+  }
+
+  .flashes li {
+    background: #e0ffe0;
+    border: 1px solid #a0e0a0;
+    color: #2d6b2d;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+  }
+
+  .preview {
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .preview img {
+    max-height: 60px;
+    display: block;
+    margin: 0 auto 0.5rem;
+  }
+</style>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class="flashes">
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+<form class="settings-form" method="POST" action="{{ url_for('admin_settings') }}" enctype="multipart/form-data">
+  <h2>Admin Settings</h2>
+
+  <label for="site_name">Site Name</label>
+  <input type="text" id="site_name" name="site_name" value="{{ settings.get('site_name', '') }}" required>
+
+  <label for="currency">Currency</label>
+  <input type="text" id="currency" name="currency" value="{{ settings.get('currency', '') }}" required>
+
+  <label for="notification_email">Notification Email</label>
+  <input type="email" id="notification_email" name="notification_email" value="{{ settings.get('notification_email', '') }}">
+
+  <label for="report_footer">Report Footer</label>
+  <textarea id="report_footer" name="report_footer" rows="3">{{ settings.get('report_footer', '') }}</textarea>
+
+  <label for="theme_color">Theme Color</label>
+  <input type="color" id="theme_color" name="theme_color" value="{{ settings.get('theme_color', '#4b6cb7') }}">
+
+  <div class="preview">
+    {% if settings.get('logo_url') %}
+      <label>Current Logo</label>
+      <img src="{{ url_for('static', filename='uploads/' ~ settings.get('logo_url')) }}" alt="Logo">
+    {% endif %}
+  </div>
+
+  <label for="logo">Upload Logo</label>
+  <input type="file" id="logo" name="logo">
+
+  <button type="submit">Save Settings</button>
+</form>
+{% endblock %}
